@@ -213,22 +213,37 @@ contract ZKProofOfCompliance is IHooks {
     /// @notice Submit a compliance proof (can be called separately before swaps)
     /// @param proof The compliance proof to submit
     function submitProof(IBrevisVerifier.ComplianceProof calldata proof) external {
+        // Verify the proof is for the correct user
+        if (proof.user != msg.sender) {
+            revert InvalidProof();
+        }
+
+        // Get expected hash from verifier
         bytes32 expectedDataHash = brevisVerifier.getUserComplianceHash(msg.sender);
 
         if (expectedDataHash == bytes32(0)) {
             revert UserNotCompliant();
         }
 
+        // Check if proof has been used (replay protection) - check hook's mapping first
+        if (usedProofs[proof.proofHash]) {
+            revert ProofAlreadyUsed();
+        }
+
+        // Verify the proof using Brevis verifier
+        // Note: We pass the expectedDataHash which we just retrieved
         (bool isValid, bytes32 dataHash) = brevisVerifier.verifyProof(proof, expectedDataHash);
 
         if (!isValid) {
             revert InvalidProof();
         }
 
-        if (usedProofs[proof.proofHash]) {
-            revert ProofAlreadyUsed();
+        // Ensure we got a valid dataHash back
+        if (dataHash == bytes32(0)) {
+            revert InvalidProof();
         }
 
+        // Mark proof as used
         usedProofs[proof.proofHash] = true;
         userComplianceHashes[msg.sender] = dataHash;
 

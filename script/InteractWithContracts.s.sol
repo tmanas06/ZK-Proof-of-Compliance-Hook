@@ -12,8 +12,8 @@ import {IBrevisVerifier} from "../src/interfaces/IBrevisVerifier.sol";
 /// @dev Update addresses after deployment
 contract InteractWithContractsScript is Script {
     // Update these addresses after deployment
-    address constant BREVIS_VERIFIER = address(0x5FbDB2315678afecb367f032d93F642f64180aa3);
-    address constant HOOK = address(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+    address constant BREVIS_VERIFIER = address(0x0165878A594ca255338adfa4d48449f69242Eb8F);
+    address constant HOOK = address(0xa513E6E4b8f2a923D98304ec87F64353C4D5C853);
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -53,25 +53,67 @@ contract InteractWithContractsScript is Script {
         console.log("  Is Compliant:", isCompliant);
         console.log("");
 
-        // Create a proof
+        // Set deployer as compliant too (since we're submitting from deployer account)
+        address deployer = vm.addr(deployerPrivateKey);
+        verifier.setUserCompliance(deployer, true, dataHash);
+        console.log("Deployer set as compliant:", deployer);
+        console.log("");
+
+        // Verify deployer is compliant
+        bool deployerCompliant = hook.isUserCompliant(deployer);
+        console.log("Deployer compliance check:", deployerCompliant);
+        console.log("");
+
+        // Create a proof for the deployer
+        // Use a unique nonce to ensure the proof hash is always unique
+        uint256 nonce = block.timestamp + block.number + uint256(uint160(deployer));
+        bytes32 proofHash = keccak256(abi.encodePacked(deployer, dataHash, nonce, "unique-proof"));
         IBrevisVerifier.ComplianceProof memory proof = IBrevisVerifier.ComplianceProof({
-            proofHash: keccak256(abi.encodePacked(testUser, dataHash, block.timestamp)),
+            proofHash: proofHash,
             publicInputs: abi.encode(dataHash),
             timestamp: block.timestamp,
-            user: testUser
+            user: deployer
         });
 
         console.log("Proof Created:");
         console.log("  Proof Hash:", vm.toString(proof.proofHash));
         console.log("  User:", proof.user);
         console.log("  Timestamp:", proof.timestamp);
+        console.log("  Expected Data Hash:", vm.toString(dataHash));
         console.log("");
 
-        // Submit proof
-        console.log("Submitting proof...");
-        hook.submitProof(proof);
-        console.log("  Proof submitted successfully!");
+        // Verify proof before submitting (test the verifier)
+        bytes32 expectedHash = verifier.getUserComplianceHash(deployer);
+        console.log("Expected compliance hash from verifier:", vm.toString(expectedHash));
+        
+        // Check if proof is already used in verifier
+        bool verifierProofUsed = verifier.isProofUsed(proof.proofHash);
+        console.log("Proof already used in verifier:", verifierProofUsed);
+        
+        (bool isValid, bytes32 verifiedHash) = verifier.verifyProof(proof, expectedHash);
+        console.log("Proof verification result (direct call):");
+        console.log("  Is Valid:", isValid);
+        console.log("  Verified Hash:", vm.toString(verifiedHash));
         console.log("");
+
+        // Submit proof through hook
+        console.log("Submitting proof through hook...");
+        try hook.submitProof(proof) {
+            console.log("  Proof submitted successfully!");
+            console.log("");
+
+            // Verify proof was recorded
+            bool proofUsed = hook.isProofUsed(proof.proofHash);
+            bytes32 userHash = hook.userComplianceHashes(deployer);
+            console.log("Verification:");
+            console.log("  Proof used in hook:", proofUsed);
+            console.log("  User compliance hash:", vm.toString(userHash));
+            console.log("");
+        } catch Error(string memory reason) {
+            console.log("  Error:", reason);
+        } catch (bytes memory lowLevelData) {
+            console.log("  Low-level error occurred");
+        }
 
         // Verify proof was recorded
         bool proofUsed = hook.isProofUsed(proof.proofHash);

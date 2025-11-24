@@ -45,33 +45,33 @@ contract BrevisVerifier is IBrevisVerifier {
         bytes32 expectedDataHash
     ) external view override returns (bool isValid, bytes32 dataHash) {
         // Check proof hasn't expired
-        require(
-            block.timestamp <= proof.timestamp + PROOF_EXPIRATION,
-            "BrevisVerifier: proof expired"
-        );
+        if (block.timestamp > proof.timestamp + PROOF_EXPIRATION) {
+            return (false, bytes32(0));
+        }
 
-        // Check proof hasn't been used (replay protection)
-        require(!usedProofs[proof.proofHash], "BrevisVerifier: proof already used");
+        // Note: Replay protection is handled by the hook contract
+        // We don't check usedProofs here to avoid conflicts with hook's own tracking
 
         // In a real implementation, this would verify the ZK proof using Brevis contracts
         // For this mock, we verify that:
         // 1. The proof hash is valid (non-zero)
-        // 2. The user matches
-        // 3. The expected data hash matches the user's compliance hash
+        // 2. The expected data hash matches the user's compliance hash
+        // Note: We don't check proof.user == msg.sender because the hook calls this,
+        // and msg.sender would be the hook contract, not the user
 
         if (proof.proofHash == bytes32(0)) {
             return (false, bytes32(0));
         }
 
-        if (proof.user != msg.sender) {
-            return (false, bytes32(0));
-        }
-
+        // Get the user's compliance hash from storage
         dataHash = userComplianceHashes[proof.user];
+        
+        // If no hash is stored for this user, they're not compliant
         if (dataHash == bytes32(0)) {
             return (false, bytes32(0));
         }
 
+        // Verify the stored hash matches the expected hash
         isValid = (dataHash == expectedDataHash);
     }
 
