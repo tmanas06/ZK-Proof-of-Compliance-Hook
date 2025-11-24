@@ -1,0 +1,30 @@
+{
+  "name": "zk-proof-of-compliance-hook",
+  "version": "1.0.0",
+  "description": "Uniswap v4 hook with ZK proof-of-compliance using Brevis Network",
+  "scripts": {
+    "compile": "forge build",
+    "test": "forge test",
+    "test:coverage": "forge coverage",
+    "lint": "forge fmt && solhint 'src/**/*.sol'",
+    "deploy:local": "forge script script/Deploy.s.sol:DeployScript --rpc-url http://localhost:8545 --broadcast",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "uniswap",
+    "v4",
+    "hook",
+    "zk",
+    "zero-knowledge",
+    "brevis",
+    "compliance",
+    "kyc"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "solhint": "^4.0.0"
+  }
+}
+
