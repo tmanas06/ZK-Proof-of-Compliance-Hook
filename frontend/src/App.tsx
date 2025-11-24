@@ -145,7 +145,7 @@ function App() {
           </Routes>
 
           <footer className="app-footer">
-            <p>© {new Date().getFullYear()} Brevis Compliance. Built with Uniswap v4 + EigenLayer.</p>
+            <p></p>
           </footer>
         </div>
       </div>
