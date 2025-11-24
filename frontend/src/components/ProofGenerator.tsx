@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ethers } from 'ethers'
 import { Key, Loader } from 'lucide-react'
 import './ProofGenerator.css'
+import { getErrorMessage, getErrorHelp } from '../utils/errorDecoder'
 
 interface ProofGeneratorProps {
   account: string
@@ -60,7 +61,9 @@ function ProofGenerator({ account, signer, hookAddress, onProofSubmitted }: Proo
       onProofSubmitted()
     } catch (err: any) {
       console.error('Error generating proof:', err)
-      setError(err.message || 'Failed to generate proof')
+      // Use user-friendly error decoder
+      const friendlyError = getErrorMessage(err)
+      setError(friendlyError)
     } finally {
       setIsGenerating(false)
     }
@@ -84,7 +87,17 @@ function ProofGenerator({ account, signer, hookAddress, onProofSubmitted }: Proo
 
         {error && (
           <div className="proof-error">
-            <p>Error: {error}</p>
+            <p><strong>{error}</strong></p>
+            {getErrorHelp({ message: error }).length > 0 && (
+              <div className="error-help">
+                <p><strong>What to do:</strong></p>
+                <ul>
+                  {getErrorHelp({ message: error }).map((help, idx) => (
+                    <li key={idx}>{help}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 

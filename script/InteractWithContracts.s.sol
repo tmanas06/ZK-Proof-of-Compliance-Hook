@@ -12,8 +12,8 @@ import {IBrevisVerifier} from "../src/interfaces/IBrevisVerifier.sol";
 /// @dev Update addresses after deployment
 contract InteractWithContractsScript is Script {
     // Update these addresses after deployment
-    address constant BREVIS_VERIFIER = address(0x0165878A594ca255338adfa4d48449f69242Eb8F);
-    address constant HOOK = address(0xa513E6E4b8f2a923D98304ec87F64353C4D5C853);
+    address constant BREVIS_VERIFIER = address(0xc5a5C42992dECbae36851359345FE25997F5C42d);
+    address constant HOOK           = address(0x67d269191c92Caf3cD7723F116c85e6E9bf55933);
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -103,11 +103,11 @@ contract InteractWithContractsScript is Script {
             console.log("");
 
             // Verify proof was recorded
-            bool proofUsed = hook.isProofUsed(proof.proofHash);
-            bytes32 userHash = hook.userComplianceHashes(deployer);
+            bool proofUsedAfterSubmit = hook.isProofUsed(proof.proofHash);
+            bytes32 userHashAfterSubmit = hook.userComplianceHashes(deployer);
             console.log("Verification:");
-            console.log("  Proof used in hook:", proofUsed);
-            console.log("  User compliance hash:", vm.toString(userHash));
+            console.log("  Proof used in hook:", proofUsedAfterSubmit);
+            console.log("  User compliance hash:", vm.toString(userHashAfterSubmit));
             console.log("");
         } catch Error(string memory reason) {
             console.log("  Error:", reason);
@@ -116,11 +116,11 @@ contract InteractWithContractsScript is Script {
         }
 
         // Verify proof was recorded
-        bool proofUsed = hook.isProofUsed(proof.proofHash);
-        bytes32 userHash = hook.userComplianceHashes(testUser);
+        bool proofUsedFinal = hook.isProofUsed(proof.proofHash);
+        bytes32 userHashFinal = hook.userComplianceHashes(deployer);
         console.log("Verification:");
-        console.log("  Proof used:", proofUsed);
-        console.log("  User compliance hash:", vm.toString(userHash));
+        console.log("  Proof used:", proofUsedFinal);
+        console.log("  User compliance hash:", vm.toString(userHashFinal));
         console.log("");
 
         console.log("========================================");

@@ -16,18 +16,27 @@ anvil
 ### Step 2: Deploy Contracts
 
 ```bash
-# In another terminal
-forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+# Deploy router and pool manager
+forge script script/DeployRouter.s.sol --rpc-url http://localhost:8545 --broadcast
 ```
 
-**Note the addresses** from the output (or check `broadcast/Deploy.s.sol/31337/run-latest.json`)
+**Note the addresses** from the output:
+- Router: `0x09635F643e140090A9A8Dcd712eD6285858ceBef`
+- PoolManager: `0x7a2088a1bFc9d81c55368AE168C2C02570cB814F`
+- Hook: `0x67d269191c92caf3cd7723f116c85e6e9bf55933`
+- Verifier: `0xc5a5c42992decbae36851359345fe25997f5c42d`
 
 ### Step 3: Set User as Compliant
 
+**⚠️ IMPORTANT:** You must set your wallet address as compliant before you can submit proofs!
+
 ```bash
 # Update script/InteractWithContracts.s.sol with new addresses first
+# Then run:
 forge script script/InteractWithContracts.s.sol --rpc-url http://localhost:8545 --broadcast
 ```
+
+**If you see "UserNotCompliant" error:** This means your address isn't marked as compliant. Run the script above to fix it.
 
 ### Step 4: Start Frontend
 
@@ -44,22 +53,27 @@ npm run dev
 3. Click "Connect Wallet"
 4. Click "Generate Proof"
 5. Click "Submit Proof"
-6. You're ready to trade! 🎉
+6. **Now you can swap and add liquidity!** 🎉
+   - Enter amount and click "Swap"
+   - Or enter amount and click "Add Liquidity"
 
 ## 📚 Documentation
 
 - **[USER_GUIDE.md](docs/USER_GUIDE.md)**: Complete user guide
 - **[PROJECT_EXPLANATION.md](docs/PROJECT_EXPLANATION.md)**: Deep dive into how it works
 - **[FRONTEND_SETUP.md](docs/FRONTEND_SETUP.md)**: Frontend setup details
+- **[UNISWAP_V4_INTEGRATION.md](docs/UNISWAP_V4_INTEGRATION.md)**: Full integration guide
 - **[README.md](README.md)**: Full project documentation
 
 ## 🎯 Current Deployment
 
 **Latest Contract Addresses:**
-- Hook: `0xa513E6E4b8f2a923D98304ec87F64353C4D5C853`
-- Verifier: `0x0165878A594ca255338adfa4d48449f69242Eb8F`
+- **Router**: `0x09635F643e140090A9A8Dcd712eD6285858ceBef`
+- **PoolManager**: `0x7a2088a1bFc9d81c55368AE168C2C02570cB814F`
+- **Hook**: `0x67d269191c92caf3cd7723f116c85e6e9bf55933`
+- **Verifier**: `0xc5a5c42992decbae36851359345fe25997f5c42d`
 
-**Update these in `frontend/src/App.tsx` before using the frontend!**
+**These are already set in the frontend!** But you can override them in the UI if needed.
 
 ## 🔍 Quick Test
 
@@ -68,13 +82,22 @@ npm run dev
 forge test --match-test test_CompliantUserCanSubmitProof -vv
 ```
 
+## ✅ What's Working
+
+- ✅ **Full Uniswap v4 Integration** - Router and PoolManager deployed
+- ✅ **Working Swaps** - Execute swaps through the frontend
+- ✅ **Working Liquidity** - Add liquidity through the frontend
+- ✅ **Hook Verification** - Compliance checks enforced
+- ✅ **Proof Submission** - Submit and verify proofs
+- ✅ **Frontend UI** - Complete React interface
+
 ## ❓ Need Help?
 
 - Check the [USER_GUIDE.md](docs/USER_GUIDE.md) for detailed instructions
 - See [PROJECT_EXPLANATION.md](docs/PROJECT_EXPLANATION.md) to understand the system
+- Review [UNISWAP_V4_INTEGRATION.md](docs/UNISWAP_V4_INTEGRATION.md) for integration details
 - Review [FRONTEND_SETUP.md](docs/FRONTEND_SETUP.md) for frontend issues
 
 ---
 
 **Happy Building! 🚀**
-

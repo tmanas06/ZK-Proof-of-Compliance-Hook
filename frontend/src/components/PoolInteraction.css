@@ -86,6 +86,34 @@
   color: #991b1b;
 }
 
+.error-box p {
+  margin-bottom: 0.5rem;
+}
+
+.error-help {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fff7ed;
+  border: 1px solid #fb923c;
+  border-radius: 6px;
+  color: #9a3412;
+}
+
+.error-help p {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.error-help ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.error-help li {
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+
 .info-note {
   margin-top: 1.5rem;
   padding: 1rem;

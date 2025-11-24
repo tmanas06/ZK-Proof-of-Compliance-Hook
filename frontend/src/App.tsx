@@ -9,9 +9,15 @@ import EigenLayerStatus from './components/EigenLayerStatus'
 import FhenixIntegration from './components/FhenixIntegration'
 
 // Contract addresses (update these after deployment)
-const HOOK_ADDRESS = '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853' // Latest deployment
-const VERIFIER_ADDRESS = '0x0165878A594ca255338adfa4d48449f69242Eb8F' // Latest deployment
+// Use the hook from the latest router deployment
+const HOOK_ADDRESS = '0x67d269191c92caf3cd7723f116c85e6e9bf55933' // From router deployment
+const VERIFIER_ADDRESS = '0xc5a5c42992decbae36851359345fe25997f5c42d' // From router deployment
 const EIGENLAYER_AVS_ADDRESS = '0x0000000000000000000000000000000000000000' // Update if EigenLayer deployed
+
+// Router and PoolManager addresses (set after deploying router)
+// These can also be set in the frontend UI
+export const ROUTER_ADDRESS = localStorage.getItem('routerAddress') || '0x0000000000000000000000000000000000000000'
+export const POOL_MANAGER_ADDRESS = localStorage.getItem('poolManagerAddress') || '0x0000000000000000000000000000000000000000'
 
 // ABI snippets (in production, import from artifacts)
 const HOOK_ABI = [

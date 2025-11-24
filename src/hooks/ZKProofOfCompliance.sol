@@ -166,6 +166,18 @@ contract ZKProofOfCompliance is IHooks {
     /// @param hookData The hook data containing the compliance proof
     /// @param action The action being performed (for error messages)
     function _verifyCompliance(address user, bytes calldata hookData, string memory action) internal {
+        // Check if user already has a valid compliance hash stored
+        bytes32 storedHash = userComplianceHashes[user];
+        bytes32 expectedDataHash = brevisVerifier.getUserComplianceHash(user);
+        
+        // If user has a stored hash that matches expected, allow the operation
+        // This allows users to perform multiple operations without submitting new proofs each time
+        if (storedHash != bytes32(0) && storedHash == expectedDataHash && expectedDataHash != bytes32(0)) {
+            // User is already verified, allow the operation
+            return;
+        }
+
+        // Otherwise, verify the proof from hookData
         // Decode the compliance proof from hookData
         IBrevisVerifier.ComplianceProof memory proof = abi.decode(
             hookData,
@@ -177,9 +189,6 @@ contract ZKProofOfCompliance is IHooks {
             emit SwapBlocked(user, "Proof user mismatch");
             revert InvalidProof();
         }
-
-        // Get expected compliance data hash
-        bytes32 expectedDataHash = brevisVerifier.getUserComplianceHash(user);
 
         // If no hash exists, user is not compliant
         if (expectedDataHash == bytes32(0)) {
