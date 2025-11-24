@@ -1,67 +1,64 @@
 .wallet-connection {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.wallet-connection h2 {
-  margin-bottom: 1rem;
-  color: #333;
-  font-size: 1.5rem;
+  background: rgba(8, 12, 24, 0.8);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .wallet-connected,
 .wallet-disconnected {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
 }
 
 .wallet-info {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-  color: #333;
-  font-weight: 500;
+  gap: 0.4rem;
 }
 
 .icon-success {
-  color: #10b981;
+  color: #4ade80;
 }
 
 .icon-error {
-  color: #ef4444;
+  color: #f87171;
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.65rem 1.25rem;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(130deg, #7c5bff, #49d5ff);
+  color: #fff;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 25px rgba(73, 213, 255, 0.25);
 }
 
 .btn-secondary {
-  background: #6b7280;
-  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .btn-secondary:hover {
-  background: #4b5563;
+  background: rgba(255, 255, 255, 0.15);
 }
 

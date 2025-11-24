@@ -4,10 +4,9 @@ import './ComplianceStatus.css'
 interface ComplianceStatusProps {
   isCompliant: boolean | null
   complianceHash: string | null
-  account: string
 }
 
-function ComplianceStatus({ isCompliant, complianceHash, account }: ComplianceStatusProps) {
+function ComplianceStatus({ isCompliant, complianceHash }: ComplianceStatusProps) {
   const formatHash = (hash: string) => {
     return `${hash.slice(0, 10)}...${hash.slice(-8)}`
   }

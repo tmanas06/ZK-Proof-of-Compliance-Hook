@@ -6,21 +6,14 @@ import './EigenLayerStatus.css'
 interface EigenLayerStatusProps {
   account: string
   signer: ethers.JsonRpcSigner | null
-  avsAddress: string
   hookAddress: string
 }
 
-function EigenLayerStatus({ account, signer, avsAddress, hookAddress }: EigenLayerStatusProps) {
+function EigenLayerStatus({ account, signer, hookAddress }: EigenLayerStatusProps) {
   const [isPending, setIsPending] = useState<boolean | null>(null)
   const [isValid, setIsValid] = useState<boolean | null>(null)
   const [requestId, setRequestId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-
-  const AVS_ABI = [
-    'function isVerificationPending(bytes32 requestId) external view returns (bool)',
-    'function getLatestVerification(address user) external view returns (tuple(bytes32 requestId, bool isValid, bytes32 dataHash, uint256 timestamp, address operator, string reason))',
-    'event VerificationResultAvailable(bytes32 indexed requestId, address indexed user, bool isValid, bytes32 dataHash, address operator)'
-  ]
 
   const HOOK_ABI = [
     'function checkEigenLayerStatus(address user) external view returns (bool isPending, bool isValid)',
@@ -134,7 +127,7 @@ function EigenLayerStatus({ account, signer, avsAddress, hookAddress }: EigenLay
       <div className="actions">
         <button
           onClick={submitVerification}
-          disabled={loading || isPending}
+          disabled={loading || Boolean(isPending)}
           className="btn btn-primary"
         >
           {loading ? 'Submitting...' : 'Submit Verification Request'}
