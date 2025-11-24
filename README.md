@@ -120,7 +120,7 @@ The frontend will be available at `http://localhost:3000`
 
 ### System Overview
 
-```
+bash ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Uniswap v4 Pool Manager                   │
 └──────────────────────┬──────────────────────────────────────┘
@@ -372,21 +372,6 @@ Run tests with verbose output:
 forge test -vvvv
 ```
 
-## 📄 License
-
-MIT License - see LICENSE file for details
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 🙏 Acknowledgments
 
@@ -396,8 +381,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 - Fhenix for FHE technology
 - Foundry team for excellent tooling
 
----
-
-**⚠️ Disclaimer**: This is a demonstration implementation. For production use, ensure proper security audits and integration with actual Brevis Network, EigenLayer AVS, and Fhenix infrastructure.
-#   Z K - P r o o f - o f - C o m p l i a n c e - H o o k  
+ 
  
