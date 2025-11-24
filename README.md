@@ -120,7 +120,7 @@ The frontend will be available at `http://localhost:3000`
 
 ### System Overview
 
-bash ```
+```bash
 ┌─────────────────────────────────────────────────────────────┐
 │                    Uniswap v4 Pool Manager                   │
 └──────────────────────┬──────────────────────────────────────┘
@@ -161,7 +161,7 @@ bash ```
 
 ### Contract Structure
 
-```
+```bash
 src/
 ├── hooks/
 │   ├── ZKProofOfCompliance.sol          # Basic hook
@@ -383,3 +383,4 @@ forge test -vvvv
 
  
  
+
