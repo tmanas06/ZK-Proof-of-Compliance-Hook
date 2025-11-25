@@ -31,30 +31,61 @@ function ProofGenerator({ account, signer, hookAddress, onProofSubmitted }: Proo
       await new Promise(resolve => setTimeout(resolve, 2000))
 
       // Create a mock proof
+      // First, get the expected compliance hash from the verifier
+      const verifierABI = [
+        'function getUserComplianceHash(address user) external view returns (bytes32)'
+      ]
+      const verifierAddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' // RealBrevisVerifier
+      const verifierContract = new ethers.Contract(verifierAddress, verifierABI, signer)
+      const expectedDataHash = await verifierContract.getUserComplianceHash(account)
+      
+      if (expectedDataHash === ethers.ZeroHash) {
+        setError('You are not marked as compliant. Please contact an administrator to set your compliance status.')
+        setIsGenerating(false)
+        return
+      }
+
       const timestamp = Math.floor(Date.now() / 1000)
-      const dataHash = ethers.keccak256(ethers.toUtf8Bytes(`${account}-${timestamp}`))
+      
+      // Create proof hash
       const proofHashValue = ethers.keccak256(
         ethers.concat([
           ethers.toUtf8Bytes(account),
-          dataHash,
+          expectedDataHash,
           ethers.toBeHex(timestamp, 32)
         ])
       )
 
+      // publicInputs must be at least 32 bytes, with first 32 bytes being the compliance hash
+      // Format: [complianceHash (32 bytes), ...other data]
+      const publicInputs = ethers.concat([
+        expectedDataHash, // First 32 bytes must be the compliance hash
+        ethers.toBeHex(timestamp, 32) // Additional data (optional)
+      ])
+
       const proof = {
         proofHash: proofHashValue,
-        publicInputs: ethers.AbiCoder.defaultAbiCoder().encode(['bytes32'], [dataHash]),
+        publicInputs: publicInputs,
         timestamp: timestamp,
         user: account
       }
 
       // Submit proof to hook contract
+      // The hook expects IBrevisVerifier.ComplianceProof format
       const hookABI = [
         'function submitProof(tuple(bytes32 proofHash, bytes publicInputs, uint256 timestamp, address user) calldata proof) external'
       ]
       const hookContract = new ethers.Contract(hookAddress, hookABI, signer)
 
-      const tx = await hookContract.submitProof(proof)
+      // Format proof according to IBrevisVerifier.ComplianceProof struct
+      const formattedProof = {
+        proofHash: proof.proofHash,
+        publicInputs: proof.publicInputs,
+        timestamp: proof.timestamp,
+        user: proof.user
+      }
+
+      const tx = await hookContract.submitProof(formattedProof)
       await tx.wait()
 
       setProofHash(proofHashValue)

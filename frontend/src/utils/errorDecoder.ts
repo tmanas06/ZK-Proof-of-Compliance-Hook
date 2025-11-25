@@ -12,6 +12,9 @@ const ERROR_SELECTORS: { [key: string]: string } = {
   '0x7e5ba1ad': 'HookNotEnabled',
   '0xea2e0857': 'InvalidComplianceData',
   '0x1f2a2005': 'Unauthorized',
+  '0x439cc0cd': 'VerificationFailed',
+  '0xbf52ac6c': 'InvalidPublicSignals',
+  '0xd7835239': 'InvalidComplianceHash',
 }
 
 // User-friendly error messages
@@ -23,6 +26,9 @@ const ERROR_MESSAGES: { [key: string]: string } = {
   HookNotEnabled: '🔒 The compliance hook is currently disabled.',
   InvalidComplianceData: '❌ Invalid compliance data provided.',
   Unauthorized: '🚫 You are not authorized to perform this action.',
+  VerificationFailed: '❌ Verification workflow failed. The proof could not be verified through the configured verification methods.',
+  InvalidPublicSignals: '❌ Invalid public signals. The proof must include at least 2 public signals (complianceHash and isValid).',
+  InvalidComplianceHash: '❌ Invalid compliance hash. The proof hash does not match the expected compliance data.',
 }
 
 /**
@@ -148,6 +154,18 @@ export function getErrorHelp(error: any): string[] {
   if (errorMsg.includes('Transaction was rejected')) {
     help.push('1. Check MetaMask for pending transactions')
     help.push('2. Approve the transaction when prompted')
+  }
+
+  if (errorMsg.includes('Verification workflow failed')) {
+    help.push('1. Make sure you are marked as compliant in the verifier contract')
+    help.push('2. Run: forge script script/InteractWithContracts.s.sol --rpc-url http://localhost:8545 --broadcast')
+    help.push('3. Try generating a new proof')
+  }
+
+  if (errorMsg.includes('Invalid public signals')) {
+    help.push('1. The proof must include at least 2 public signals')
+    help.push('2. First signal should be the complianceHash (bytes32)')
+    help.push('3. Second signal should be isValid (1 for compliant, 0 for non-compliant)')
   }
 
   return help
