@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
-
 // SPDX-License-Identifier: GPL-3.0
 /*
     Copyright 2021 0KIMS association.
@@ -21,7 +18,7 @@ pragma solidity ^0.8.24;
     along with snarkJS. If not, see <https://www.gnu.org/licenses/>.
 */
 
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity ^0.8.24;
 
 contract Groth16Verifier {
     // Scalar field size
