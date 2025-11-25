@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom'
-import { ShieldCheck, Cpu, BookOpenCheck, BarChart3 } from 'lucide-react'
+import { ShieldCheck, Cpu, BookOpenCheck, BarChart3, Zap } from 'lucide-react'
 import './App.css'
 import WalletConnection from './components/WalletConnection'
 import DashboardPage from './pages/Dashboard'
 import InsightsPage from './pages/Insights'
 import ResourcesPage from './pages/Resources'
+import ProductionHookPage from './pages/ProductionHook'
 
 // Contract addresses (from enhanced deployment)
 const HOOK_ADDRESS = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9' // ZKProofOfComplianceFull
 const VERIFIER_ADDRESS = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' // RealBrevisVerifier
-const EIGENLAYER_AVS_ADDRESS = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0' // RealEigenLayerAVS
-const FHENIX_FHE_ADDRESS = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9' // RealFhenixFHE
 // Router and PoolManager addresses (set after deploying router)
 // These can also be set in the frontend UI
 export const ROUTER_ADDRESS = localStorage.getItem('routerAddress') || '0x0000000000000000000000000000000000000000'
@@ -85,6 +84,7 @@ function App() {
 
   const navLinks = [
     { to: '/', label: 'Dashboard', icon: ShieldCheck },
+    { to: '/production', label: 'Production Hook', icon: Zap },
     { to: '/insights', label: 'Insights', icon: BarChart3 },
     { to: '/resources', label: 'Resources', icon: BookOpenCheck }
   ]
@@ -140,6 +140,10 @@ function App() {
                   }}
                 />
               }
+            />
+            <Route
+              path="/production"
+              element={<ProductionHookPage account={account} signer={signer} provider={provider} />}
             />
             <Route path="/insights" element={<InsightsPage account={account} complianceHash={complianceHash} isCompliant={isCompliant} />} />
             <Route path="/resources" element={<ResourcesPage />} />
