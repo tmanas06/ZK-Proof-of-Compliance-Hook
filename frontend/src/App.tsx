@@ -30,9 +30,20 @@ function App() {
   const [complianceHash, setComplianceHash] = useState<string | null>(null)
 
   useEffect(() => {
-    if (window.ethereum) {
-      const newProvider = new ethers.BrowserProvider(window.ethereum)
-      setProvider(newProvider)
+    // Suppress extension errors when checking for wallet
+    try {
+      if (window.ethereum) {
+        const newProvider = new ethers.BrowserProvider(window.ethereum)
+        setProvider(newProvider)
+      }
+    } catch (error: any) {
+      // Silently handle extension communication errors
+      if (
+        !error?.message?.includes('runtime.lastError') &&
+        !error?.message?.includes('Receiving end does not exist')
+      ) {
+        console.error('Error initializing provider:', error)
+      }
     }
   }, [])
 

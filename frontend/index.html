@@ -5,6 +5,101 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ZK Proof of Compliance - Uniswap v4 Hook</title>
+    <script src="/suppress-errors.js"></script>
+    <script>
+      // Suppress browser extension errors immediately, before any other scripts run
+      // This must run FIRST, before extensions inject their code
+      (function() {
+        'use strict';
+        
+        // Store original methods
+        const originalError = console.error.bind(console);
+        const originalWarn = console.warn.bind(console);
+        const originalLog = console.log.bind(console);
+        
+        // Patterns to suppress
+        const suppressPatterns = [
+          'runtime.lastError',
+          'Receiving end does not exist',
+          'Could not establish connection',
+          'Extension context invalidated',
+          'message port closed',
+          'channel closed'
+        ];
+        
+        // Check if message should be suppressed
+        function shouldSuppress(msg) {
+          if (!msg) return false;
+          const str = String(msg);
+          return suppressPatterns.some(pattern => str.includes(pattern));
+        }
+        
+        // Override console.error
+        console.error = function(...args) {
+          if (args.length > 0 && shouldSuppress(args[0])) {
+            return; // Suppress
+          }
+          originalError.apply(console, args);
+        };
+        
+        // Override console.warn
+        console.warn = function(...args) {
+          if (args.length > 0 && shouldSuppress(args[0])) {
+            return; // Suppress
+          }
+          originalWarn.apply(console, args);
+        };
+        
+        // Override console.log (some extensions use this)
+        console.log = function(...args) {
+          if (args.length > 0 && shouldSuppress(args[0])) {
+            return; // Suppress
+          }
+          originalLog.apply(console, args);
+        };
+        
+        // Suppress unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+          const reason = e.reason?.message || e.reason?.toString() || String(e.reason || '');
+          if (shouldSuppress(reason)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, true);
+        
+        // Suppress error events
+        window.addEventListener('error', function(e) {
+          const msg = e.message || String(e.error || '');
+          if (shouldSuppress(msg)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, true);
+        
+        // Also try to catch errors from extensions directly
+        if (window.chrome && window.chrome.runtime) {
+          try {
+            const originalSendMessage = window.chrome.runtime.sendMessage;
+            if (originalSendMessage) {
+              window.chrome.runtime.sendMessage = function(...args) {
+                try {
+                  return originalSendMessage.apply(this, args);
+                } catch (e) {
+                  if (shouldSuppress(e.message)) {
+                    return; // Suppress
+                  }
+                  throw e;
+                }
+              };
+            }
+          } catch (e) {
+            // Ignore if we can't override
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

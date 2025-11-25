@@ -91,16 +91,19 @@ function ProductionHookPage({ account, signer, provider }: ProductionHookProps) 
       const hook = new ethers.Contract(PRODUCTION_HOOK_ADDRESS, PRODUCTION_HOOK_ABI, provider)
       const [isCompliant, hash, lastTime] = await hook.checkCompliance(account)
 
-      const proofExpired = lastTime > 0 && Date.now() / 1000 > Number(lastTime) + proofExpiration
+      // Check if proof has expired
+      const lastTimeNum = Number(lastTime)
+      const proofExpired = lastTimeNum > 0 && Date.now() / 1000 > lastTimeNum + proofExpiration
 
       setComplianceStatus({
         isCompliant: isCompliant && !proofExpired,
         complianceHash: hash === ethers.ZeroHash ? null : hash,
-        lastProofTime: Number(lastTime),
+        lastProofTime: lastTimeNum,
         proofExpired
       })
     } catch (err: any) {
       console.error('Error loading compliance status:', err)
+      // Set default non-compliant status
       setComplianceStatus({
         isCompliant: false,
         complianceHash: null,
@@ -230,8 +233,8 @@ function ProductionHookPage({ account, signer, provider }: ProductionHookProps) 
                     <strong>Not Compliant</strong>
                     <p>
                       {complianceStatus.proofExpired
-                        ? 'Your proof has expired. Please submit a new proof.'
-                        : 'You need to submit a compliance proof.'}
+                        ? 'Your proof has expired. Please submit a new Groth16 proof below.'
+                        : 'You need to submit a Groth16 zk-SNARK proof. Use the form below to submit your proof.'}
                     </p>
                   </div>
                 </div>
@@ -439,13 +442,18 @@ function ProductionHookPage({ account, signer, provider }: ProductionHookProps) 
             </button>
 
             <div className="help-box">
-              <h4>How to Generate a Proof:</h4>
+              <h4>How to Generate a Groth16 Proof:</h4>
               <ol>
-                <li>Use snarkjs with compliance.wasm and compliance_0001.zkey</li>
-                <li>Generate proof with: <code>snarkjs groth16 prove compliance_0001.zkey witness.wtns proof.json public.json</code></li>
-                <li>Extract proof components from proof.json</li>
+                <li>Install snarkjs: <code>npm install -g snarkjs</code></li>
+                <li>Generate witness: <code>node circuits/compliance_js/generate_witness.js circuits/compliance.wasm input.json witness.wtns</code></li>
+                <li>Generate proof: <code>snarkjs groth16 prove circuits/compliance_0001.zkey witness.wtns proof.json public.json</code></li>
+                <li>Extract proof components (a, b, c) and public signals from proof.json</li>
                 <li>Paste the values into the form above</li>
               </ol>
+              <p style={{ marginTop: '1rem', opacity: 0.8 }}>
+                <strong>Note:</strong> For testing, you can also use mock proof values, but they won't pass Groth16 verification. 
+                Real proofs must be generated from the compliance.circom circuit.
+              </p>
             </div>
           </section>
 

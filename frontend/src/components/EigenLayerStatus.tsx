@@ -31,11 +31,26 @@ function EigenLayerStatus({ account, signer, hookAddress }: EigenLayerStatusProp
 
     try {
       const hook = new ethers.Contract(hookAddress, HOOK_ABI, signer)
-      const [pending, valid] = await hook.checkEigenLayerStatus(account)
-      setIsPending(pending)
-      setIsValid(valid)
+      // Check if the function exists by trying to call it
+      // If it doesn't exist, the hook doesn't support EigenLayer
+      try {
+        const [pending, valid] = await hook.checkEigenLayerStatus(account)
+        setIsPending(pending)
+        setIsValid(valid)
+      } catch (callError: any) {
+        // Function doesn't exist or contract doesn't support EigenLayer
+        // This is expected for ProductionComplianceHook which doesn't have EigenLayer
+        if (callError.code === 'CALL_EXCEPTION' || callError.reason?.includes('require(false)')) {
+          setIsPending(false)
+          setIsValid(null) // Not applicable
+          return
+        }
+        throw callError
+      }
     } catch (error) {
-      console.error('Error checking EigenLayer status:', error)
+      // Silently handle - EigenLayer might not be supported by this hook
+      setIsPending(false)
+      setIsValid(null)
     }
   }
 
