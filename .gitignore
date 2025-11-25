@@ -7,6 +7,12 @@ out/
 # Environment variables
 .env
 .env.local
+.env.*
+!.env.example
+*.env.backup
+*.env.bak
+.env.backup
+.env.bak
 
 # IDE
 .vscode/
